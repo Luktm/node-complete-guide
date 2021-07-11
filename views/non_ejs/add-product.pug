@@ -1,0 +1,23 @@
+//- similar to @extend('layout.app') in laravel
+extends layouts/main-layout.pug
+
+
+//- after install template engine, npm install --save ejs pug express-handlebars
+//- write app.set('view engine', 'pug') and,
+//-  app.set('views', 'views') in app.js as a default engine, 
+//- then usen res.render() method
+block styles 
+    link(rel="stylesheet", href="/css/main.css")
+    link(rel="stylesheet", href="/css/product.css")
+    link(rel="stylesheet", href="/css/forms.css")
+
+//- similar to @section('content') in laravel
+block content
+    main
+        section
+            // POST route
+            form.product-form(action='/admin/add-product' method='POST')
+            .form-control
+                label(for='title') Title
+                input#title(type='text' name='title' placeholder='')
+            button(type='submit') Add Product

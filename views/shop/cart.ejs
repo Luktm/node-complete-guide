@@ -1,0 +1,26 @@
+<%-include('../includes/head')%>
+
+<body>
+
+<%-include('../includes/navigation')%>
+
+<main>
+    <% if (products.length > 0) { %>
+        <ul>
+            <% products.forEach(p => { %>
+                <p>
+                    <li><%= p.productData.title %> (<%= p.qty %>) </li>
+                    <!-- action is route similar to laravel php action="route("post.name")" -->
+                    <form action="/cart-delete-item" type="submit" method="POST">
+                        <input type="hidden" value="<%= p.productData.id %>" name="productId">
+                        <button class="btn">Delete</button>
+                    </form>
+                </p>
+            <% }) %>
+        </ul>
+    <% } else { %>
+
+    <% } %>
+</main>
+
+<%-include('../includes/end')%>
