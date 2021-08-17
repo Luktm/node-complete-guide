@@ -1,11 +1,33 @@
-<%-include('.. /includes/head')%>
+<%-include('../includes/head')%>
 
     <body>
 
-        <%-include('.. /includes/navigation')%>
+        <%-include('../includes/navigation')%>
 
-            <main>
+        <main>
+            <% if (orders.length <= 0) { %>
+                <h1>Nothing here</h1>
+            <% } else { %>
+                <ul>
+                    <% orders.forEach((order) => { %>
+                        <li>
+                            <h1># <%= order.id %></h1>
+                            <ul>
+                                <!-- in getOrders({include: ['products']}) controller, 
+                                    we have products relation include to order, 
+                                    which mean we can effectively call order.products list and loop through it and, 
+                                    like laravel if we include with(), it nested products array to each order property  -->
+                                <% order.products.forEach((product) => { %>
+                                    <li>
+                                        <!-- product has relation to order, and it's middle table is orderItem -->
+                                        <%= product.title %> (<%= product.orderItem.quantity %>)
+                                    </li>
+                                <% }); %>
+                            </ul>
+                        </li>
+                    <% }); %>
+                </ul>
+            <% } %>
+        </main>
 
-            </main>
-
-            <%-include('.. /includes/end')%>
+        <%-include('../includes/end')%>

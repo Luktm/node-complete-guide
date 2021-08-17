@@ -20,7 +20,7 @@
                         </div>
                         <div class="form-control">
                             <label for="price">Price</label>
-                            <input type="number" name="price" id="price" step="0.01" value="<%if (editing) { %><%=product.price.trim()%><%}%>">
+                            <input type="number" name="price" id="price" step="0.01" value="<%if (editing) { %><%=product.price%><%}%>">
                         </div>
                         <div class="form-control">
                             <label for="description">Description</label>
@@ -32,7 +32,7 @@
                         <% } %>
                         
                         <button type="submit">
-                            <% if(editing) {%> Edit <% } else { %> Add <% } %>Product
+                            <% if(editing) {%> Update <% } else { %> Add <% } %>Product
                         </button>
                     </form>
                 </section>

@@ -4,23 +4,39 @@
 
 <%-include('../includes/navigation')%>
 
-<main>
-    <% if (products.length > 0) { %>
-        <ul>
-            <% products.forEach(p => { %>
-                <p>
-                    <li><%= p.productData.title %> (<%= p.qty %>) </li>
-                    <!-- action is route similar to laravel php action="route("post.name")" -->
-                    <form action="/cart-delete-item" type="submit" method="POST">
-                        <input type="hidden" value="<%= p.productData.id %>" name="productId">
-                        <button class="btn">Delete</button>
-                    </form>
-                </p>
-            <% }) %>
-        </ul>
-    <% } else { %>
+<main class="main">
+    <div class="wrapper-list">
+        <% if (products.length > 0) { %>
+            <ul class="list">
+                <% products.forEach(p => { %>
+                    <!-- we can access relation by call cartItem model -->
+                    <li class="list-item">
+                        <%= p.title %> (<%= p.cartItem.quantity %>)
+                        <!-- action is route similar to laravel php action="route("post.name")" -->
+                        <form action="/cart-delete-item" type="submit" method="POST">
+                            <div class="form-control">
+                                <input type="hidden" value="<%= p.id %>" name="productId">
+                                <button class="btn danger">Delete</button>
+                            </div>
+                        </form>
+                </li>
+                <% }) %>
+            </ul>
 
-    <% } %>
+            <hr>
+            
+            <div class="centered">
+                <form action="/create-order" method="POST">
+                    <button type="submit" class="btn">Order Now!</button>
+                </form>
+            </div>
+            
+        <% } else { %>
+            <h1>No item found</h1>
+        <% } %>
+
+</div>
+
 </main>
 
 <%-include('../includes/end')%>

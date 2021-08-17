@@ -22,12 +22,12 @@
                             </div>
                             <div class="card__actions">
                                 <!-- like laravel edit(id) method for edit route -->
-                                <a href="/admin/edit-product<%= product.id %>?edit=true" class="btn">Edit</a href=>
+                                <a href="/admin/edit-product/<%= product.id %>?edit=true" class="btn">Edit</a href=>
                                 <!-- bcuz i want post method -->
                                 <!-- req.body.productId in admin route -->
-                                <input type="hidden" value="<%= product.id %>" name="productId">
                                 <form action="/admin/delete-product" method="POST">
                                     <button class="btn">Delete</button>
+                                    <input type="hidden" value="<%= product.id %>" name="productId">
                                 </form>
                             </div>
                         </article>

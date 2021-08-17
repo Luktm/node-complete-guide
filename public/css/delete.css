@@ -1,0 +1,26 @@
+.main {
+    width: 40%;
+}
+
+.wrapper-list {
+    font-family: 'Open Sans', sans-serif;
+    box-sizing: border-box;
+    flex-direction: column;
+    text-align: center;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+}
+
+ul.list {
+    list-style-type: none;
+}
+
+ul.list .list-item {
+    font-family: 'Open Sans', sans-serif;
+    list-style-type: none;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}

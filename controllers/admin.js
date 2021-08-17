@@ -37,19 +37,34 @@ module.exports.postAddProduct = (req, res, next) => {
     const imageUrl = req.body.imageUrl;
     const price = req.body.price;
     const description = req.body.description;
-    const product = new Product(null,title, imageUrl, description, price);
 
-    product
-        .save()
-        .then(() => {
-            res.redirect('/');
-        })
-        .catch((err) => { 
-            console.log(err);
-        });
+    // since it has relation set up in app.js line 84 to 85,
+    // user hasMany() will generate createProduct(); method for us with user id given
+    // it prefix create in front Product model, it a way to make sure what model to belong
+    req.user.createProduct({
+        title: title,
+        price: price,
+        imageUrl: imageUrl,
+        description: description,
+    })
+    
+    // this replace by above createProduct
+    // // get the model which it has connect to database
+    // Product.create({
+    //     title: title,
+    //     price: price,
+    //     imageUrl: imageUrl,
+    //     description: description,
+    //     // from app.js req.body.userId = user
+    //     userId: req.user.id,
+    // })
 
-    // redirect to specify route
-    res.redirect('/');
+    .then((result) => {
+        console.log('Created Product');
+        res.redirect('/admin/products');
+    }).catch((err) => {
+        console.log(err);
+    });
 };
 
 // controller later pass it into routes/admin.js
@@ -67,10 +82,18 @@ module.exports.getEditProduct = (req, res) => {
     // get from route /product/:productId
     const prodId = req.params.productId;
 
-    Product.findById(prodId, (product) => {
-        if (!product) {
-            return res.redirect('/');
-        }
+    // in order to get current login user product, it called by this method as it has relation setup in app.js
+    // it prefix `get` suffix with `s`  
+    req.user.getProducts({ where: {id: prodId } })
+        // Product.findByPk(prodId) // from sequelize fetch all product
+        .then((products) => {
+            // it return array
+            const product = products[0];
+            
+            if (!product) {
+                return res.redirect('/');
+            }
+
         res.render('admin/edit-product', {
             pageTitle: 'Edit Product',
             path: '/admin/edit-product',
@@ -89,16 +112,31 @@ module.exports.postEditProduct = (req, res, next) => {
     const updatedPrice = req.body.price;
     const updatedImageUrl = req.body.imageUrl;
     const updatedDesc = req.body.description;
-    const updatedProduct = new Product(prodId, updatedTitle, updatedPrice, updatedImageUrl, updatedDesc);
-    // save and overwrite exisiting one
-    updatedProduct.save();
-    res.redirect('/admin/products');
+
+    Product.findByPk(prodId).then((product) => {
+        // note this won't change the data in database, it only do locally
+        product.title = updatedTitle;
+        product.price = updatedPrice;
+        product.description = updatedDesc;
+        product.imageUrl = updatedImageUrl;
+        // this provide by sequenlize, it will udpate the existed, if not, then it will create a new entry
+        return product.save();
+    })
+        .then((result) => {
+            console.log('UPDATED PRODUCT');
+            res.redirect('/admin/products');
+        })
+        .catch((err) => {
+            console.log(err);
+        })
 }
 
-module.exports.getProduct = (req, res, next) => {
+module.exports.getProducts = (req, res, next) => {
 
-    // pass callback
-    Product.fetchAll((products) => {
+    // instead of finding all product, we find login user product
+    // Product.findAll()
+        req.user.getProducts()
+        .then((products) => {
         // send() response set to default header text/html
 
         /**
@@ -120,12 +158,23 @@ module.exports.getProduct = (req, res, next) => {
             pageTitle: 'Admin Products',
             path: '/admin/products',
         });
+    }).catch((err) => {
+        console.log(err);
     });
 };
 
 module.exports.postDeleteProduct = (req, res, next) => {
     // from input hidden
     const prodId = req.body.productId;
-    Product.deleteById(prodId);
-    res.redirect('/admin/products');
+
+    // sequenlize delete by id
+    Product.findByPk(prodId)
+        .then(product => {
+            return product.destroy();
+        }).then((result) => {
+            console.log('DESTROYER PRODUCT');
+            res.redirect('/admin/products');
+        }).catch((err) => {
+            console.log(err);
+        });
 };
