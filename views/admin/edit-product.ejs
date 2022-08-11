@@ -28,7 +28,7 @@
                         </div>
                         <!-- hidden input, so we can retrieve it as req.body.name from textfield -->
                         <%if (editing) {%>
-                            <input type="hidden" value="<%= product.id %>" name="productId">
+                            <input type="hidden" value="<%= product._id %>" name="productId">
                         <% } %>
                         
                         <button type="submit">

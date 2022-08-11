@@ -38,16 +38,23 @@ module.exports.postAddProduct = (req, res, next) => {
     const price = req.body.price;
     const description = req.body.description;
 
-    // since it has relation set up in app.js line 84 to 85,
-    // user hasMany() will generate createProduct(); method for us with user id given
-    // it prefix create in front Product model, it a way to make sure what model to belong
-    req.user.createProduct({
-        title: title,
-        price: price,
-        imageUrl: imageUrl,
-        description: description,
-    })
+
+    // mongo model goes here
+    // req.user._id assigned from app.js at line 80
+    const product = new Product(title, price, description, imageUrl, null, req.user._id);    
     
+    // this replace by mongodb at line 70
+    // // since it has relation set up in app.js line 84 to 85,
+    // // user hasMany() will generate createProduct(); method for us with user id given
+    // // it prefix create in front Product model, it a way to make sure what model to belong
+    // req.user.createProduct({
+    //     title: title,
+    //     price: price,
+    //     imageUrl: imageUrl,
+    //     description: description,
+    // })
+    
+
     // this replace by above createProduct
     // // get the model which it has connect to database
     // Product.create({
@@ -59,12 +66,14 @@ module.exports.postAddProduct = (req, res, next) => {
     //     userId: req.user.id,
     // })
 
-    .then((result) => {
-        console.log('Created Product');
-        res.redirect('/admin/products');
-    }).catch((err) => {
-        console.log(err);
-    });
+    // look at line 43
+    product.save()
+        .then((result) => {
+            console.log('Created Product');
+            res.redirect('/admin/products');
+        }).catch((err) => {
+            console.log(err);
+        });
 };
 
 // controller later pass it into routes/admin.js
@@ -84,12 +93,19 @@ module.exports.getEditProduct = (req, res) => {
 
     // in order to get current login user product, it called by this method as it has relation setup in app.js
     // it prefix `get` suffix with `s`  
-    req.user.getProducts({ where: {id: prodId } })
-        // Product.findByPk(prodId) // from sequelize fetch all product
-        .then((products) => {
+    // sequenlize doc https://sequelize.org/docs/v6/
+    // req.user.getProducts({ where: {id: prodId } })
+
+    // sequenlize doc https://sequelize.org/docs/v6/
+    // Product.findByPk(prodId) // from sequelize fetch all product
+    
+    Product.findById(prodId)
+        .then((product) => {
             // it return array
-            const product = products[0];
-            
+            // from sequenlize we need extract from array
+            // const product = products[0];
+
+            // mongodb
             if (!product) {
                 return res.redirect('/');
             }
@@ -100,7 +116,7 @@ module.exports.getEditProduct = (req, res) => {
             editing: isEditMode,
             product: product
         });
-    });
+});
 
 
 };
@@ -112,31 +128,44 @@ module.exports.postEditProduct = (req, res, next) => {
     const updatedPrice = req.body.price;
     const updatedImageUrl = req.body.imageUrl;
     const updatedDesc = req.body.description;
+    
+    // sequenlize doc https://sequelize.org/docs/v6/
+    // Product.findByPk(prodId)
 
-    Product.findByPk(prodId).then((product) => {
-        // note this won't change the data in database, it only do locally
-        product.title = updatedTitle;
-        product.price = updatedPrice;
-        product.description = updatedDesc;
-        product.imageUrl = updatedImageUrl;
+    // Product.findById(prodId)
+    //     .then((productData) => {
+        // // note this won't change the data in database, it only do locally
+        // // sequenlize method
+        // product.title = updatedTitle;
+        // product.price = updatedPrice;
+        // product.description = updatedDesc;
+        // product.imageUrl = updatedImageUrl;
         // this provide by sequenlize, it will udpate the existed, if not, then it will create a new entry
-        return product.save();
-    })
-        .then((result) => {
-            console.log('UPDATED PRODUCT');
-            res.redirect('/admin/products');
-        })
-        .catch((err) => {
-            console.log(err);
-        })
+
+        // return product.save();
+    // })
+
+        const product =  new Product(updatedTitle, updatedPrice, updatedDesc, updatedImageUrl, prodId);
+        product
+            .save()
+            .then((result) => {
+                console.log('UPDATED PRODUCT');
+                res.redirect('/admin/products');
+            })
+            .catch((err) => {
+                console.log(err);
+            })
 }
 
 module.exports.getProducts = (req, res, next) => {
 
     // instead of finding all product, we find login user product
     // Product.findAll()
-        req.user.getProducts()
-        .then((products) => {
+        // req.user.getProducts()
+
+        // Mongodb model
+        Product.fetchAll()
+            .then((products) => {
         // send() response set to default header text/html
 
         /**
@@ -168,10 +197,17 @@ module.exports.postDeleteProduct = (req, res, next) => {
     const prodId = req.body.productId;
 
     // sequenlize delete by id
-    Product.findByPk(prodId)
-        .then(product => {
-            return product.destroy();
-        }).then((result) => {
+    // Product.findByPk(prodId)
+
+    // mongodb
+    Product.deleteById(prodId)
+        
+    // sequelize method
+        // .then(product => {
+        //     return product.destroy();
+        // })
+
+        .then((result) => {
             console.log('DESTROYER PRODUCT');
             res.redirect('/admin/products');
         }).catch((err) => {

@@ -9,8 +9,10 @@ const app = express();
 
 
 // mongodb import from utils/database where it setup to call mongo atlas
-const mongoConnect = require('./utils/database');
+const mongoConnect = require('./utils/database').mongoConnect;
 
+// mongo way to create user see line at 72
+const User = require('./models/user');
 
 // // install mysql and access it
 // const sequelize = require('./utils/database');
@@ -41,9 +43,9 @@ app.set('views', 'views');
 // const rootDir = require('./utils/path');
 
 
-// // import the exported express.Router and call app.use(adminRoutes) as an extension here
-// const adminRoutes = require('./routes/admin');
-// const shopRoutes = require('./routes/shop');
+// import the exported express.Router and call app.use(adminRoutes) as an extension here
+const adminRoutes = require('./routes/admin');
+const shopRoutes = require('./routes/shop');
 const errorController = require('./controllers/error');
 
 // // better to know how SQL query work to execute intended queries
@@ -67,23 +69,31 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // // middleware is only register here, unless incoming request has make,
-// app.use((req, res, next) => {
-//     User
-//         .findByPk(1)
-//         .then((user) => {
-//             // * assign req.user to all route with User Model, so they can access relation defined down here.
-//             req.user = user;
-//             next();// continue next middleware
-//         })
-//         .catch((err) => console.log(err));
-// });
+app.use((req, res, next) => {
+    User
+        // // sequenlize method findByPk, remember read the documentation
+        // .findByPk(1)
+        // and create an user in compass in mongo, then test it in mongoConnect right at the bottom line
+        .findById("62a849bdb32c73e77904b796")
+        .then((user) => {
+            // * assign req.user to all route with User Model, so they can access relation defined down here.
+            // * assign user model to req.user;
+            req.user = new User(user.name, user.email, user.cart, user._id);
+            next();// continue next middleware
+        })
+        .catch((err) => console.log(err));
+
+// call next, otherwise every incoming request would die here.
+// next();
+
+});
 
 
 // // import the outsource route and use it here, 
 // // remember the order matter
 // // filtering mechanism /admin route, so nested route don't have repeated
-// app.use('/admin', adminRoutes);
-// app.use(shopRoutes);
+app.use('/admin', adminRoutes);
+app.use(shopRoutes);
 
 // add 404 middleware for user miss use it, if all the path didn't exist
 app.use(errorController.get404);
@@ -160,7 +170,7 @@ app.use(errorController.get404);
 
 
 
-// Call the function from utils/database where we export it.
+// Call the function from utils/database where we export it at line 12.
 mongoConnect(client => {
     console.log(client);
     app.listen(3000);

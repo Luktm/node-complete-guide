@@ -11,11 +11,11 @@
                 <% products.forEach(p => { %>
                     <!-- we can access relation by call cartItem model -->
                     <li class="list-item">
-                        <%= p.title %> (<%= p.cartItem.quantity %>)
+                        <%= p.title %> (<%= p.quantity %>)
                         <!-- action is route similar to laravel php action="route("post.name")" -->
                         <form action="/cart-delete-item" type="submit" method="POST">
                             <div class="form-control">
-                                <input type="hidden" value="<%= p.id %>" name="productId">
+                                <input type="hidden" value="<%= p._id %>" name="productId">
                                 <button class="btn danger">Delete</button>
                             </div>
                         </form>

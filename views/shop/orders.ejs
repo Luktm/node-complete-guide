@@ -11,16 +11,16 @@
                 <ul>
                     <% orders.forEach((order) => { %>
                         <li>
-                            <h1># <%= order.id %></h1>
+                            <h1># <%= order._id %></h1>
                             <ul>
                                 <!-- in getOrders({include: ['products']}) controller, 
                                     we have products relation include to order, 
                                     which mean we can effectively call order.products list and loop through it and, 
                                     like laravel if we include with(), it nested products array to each order property  -->
-                                <% order.products.forEach((product) => { %>
+                                <% order.items.forEach((product) => { %>
                                     <li>
                                         <!-- product has relation to order, and it's middle table is orderItem -->
-                                        <%= product.title %> (<%= product.orderItem.quantity %>)
+                                        <%= product.title %> (<%= product.quantity %>)
                                     </li>
                                 <% }); %>
                             </ul>

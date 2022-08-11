@@ -21,8 +21,9 @@
                                 <p class="product__description"><%= product.description %></p>
                             </div>
                             <div class="card__actions">
-                                        <!-- /prodcuts/0.43823 -->
-                                <a href="/products/<%= product.id %>" class="btn">Details</a>
+                                <!-- /prodcuts/0.43823 -->
+                                <!-- mongodb use underscore for its _id -->
+                                <a href="/products/<%= product._id %>" class="btn">Details</a>
                                 <!-- add the second argument for loop at line 10, to pass props the product -->
                                 <%- include('../includes/add-to-cart.ejs', {product: product}) %>
                             </div>

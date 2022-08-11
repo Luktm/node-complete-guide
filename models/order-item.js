@@ -1,16 +1,17 @@
-const { Sequelize } = require('sequelize');
+// sequenlize only
+// const { Sequelize } = require('sequelize');
 
-const sequelize = require('../utils/database');
+// const sequelize = require('../utils/database');
 
-// create table to database
-const OrderItem = sequelize.define('orderItem', {
-    id: {
-        type: Sequelize.INTEGER,
-        autoIncrement: true,
-        allowNull: false,
-        primaryKey: true,
-    },
-    quantity: Sequelize.INTEGER,
-});
+// // create table to database
+// const OrderItem = sequelize.define('orderItem', {
+//     id: {
+//         type: Sequelize.INTEGER,
+//         autoIncrement: true,
+//         allowNull: false,
+//         primaryKey: true,
+//     },
+//     quantity: Sequelize.INTEGER,
+// });
 
-module.exports = OrderItem;
+// module.exports = OrderItem;

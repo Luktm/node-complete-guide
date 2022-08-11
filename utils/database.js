@@ -33,15 +33,31 @@ const MongoClient = mongodb.MongoClient;
 // insert password under security user,
 // MongoClient.connect actually return promise, to check whether it connect successfully or failed
 
-// Wrap into arrow function and export this function, and import it in app.js
+// Wrap into arrow function and export this function, and import it in app.js at line 164
+
+let _db;
+
 const mongoConnect = (callback) => {
-    MongoClient.connect('mongodb+srv://luk1993:4dSCKp7DhWaQyykl@cluster0.chpu7.mongodb.net/?retryWrites=true&w=majority')
+    // follow after this url 'mongodb.net/`DATABASE_NAME?retryWrites=true&w=majority`'
+    MongoClient.connect('mongodb+srv://luk1993:4dSCKp7DhWaQyykl@cluster0.chpu7.mongodb.net/shop?retryWrites=true&w=majority')
         .then(client => {
-            callback(client);
             console.log('Mongodb Connected');
+            // assign mongo client to private variable;
+            _db = client.db();
+            callback();
         }).catch(err => {
             console.log(err);
+            throw err;
         });
-}
+};
 
-module.exports = mongoConnect;
+const getDb = () => {
+    if(_db) {
+        return _db;
+    }
+    throw 'No database found';
+};
+
+// if only export one, `module.exports = NAME`, more than 1 can put it as `exports.NAME = NAME`
+exports.mongoConnect = mongoConnect;
+exports.getDb = getDb;
